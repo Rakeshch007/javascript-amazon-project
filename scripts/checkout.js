@@ -1,6 +1,12 @@
-import {cart} from "../data/cart.js";
+import {cart, renderCartQuantity, removeFromCart} from "../data/cart.js";
 import {products} from "../data/products.js";
 import {formatCurrency} from "./utils/money.js";
+
+
+
+const middleHeaderElement= document.querySelector(".js-header-middle-section");
+middleHeaderElement.innerHTML = `Checkout (<a class="return-to-home-link"
+            href="amazon.html">${renderCartQuantity()} items</a>)`
 
 let cartItemsHtml = ``;
 cart.forEach((itemInCart)=>{
@@ -15,7 +21,7 @@ cart.forEach((itemInCart)=>{
     });
   
     
-    const html = `  <div class="cart-item-container">
+    const html = `  <div class="cart-item-container js-item-container-${productId}">
                             <div class="delivery-date">
                                 Delivery date: Tuesday, June 21
                                 </div>
@@ -94,26 +100,21 @@ cart.forEach((itemInCart)=>{
     cartItemsHtml +=html;
 });
 
-
-document.querySelector(".js-order-summary-div"). innerHTML = cartItemsHtml;
+document.querySelector(".js-order-summary-div").innerHTML = cartItemsHtml;
 
 
 const deleteSpanElements = document.querySelectorAll(".js-delete-span");
 
 deleteSpanElements.forEach((deleteLink)=>{
     deleteLink.addEventListener("click", ()=>{
-        let matchingProduct;
-        let temp = [];
-        cart.forEach((cartItem)=>{
-            if(deleteLink.dataset.productId === cartItem.id){
-                matchingProduct = cartItem;
-            }
-            if(!matchingProduct){
-                temp.push(matchingProduct);
-            }
-
-        });
-       cart =temp;
+       
+       const productId = deleteLink.dataset.productId;
+        removeFromCart(productId);
+        console.log(cart);
+        const itemTobeDeleted= document.querySelector(`.js-item-container-${productId}`);
+        itemTobeDeleted.remove();
+        middleHeaderElement.innerHTML = `Checkout (<a class="return-to-home-link"
+        href="amazon.html">${renderCartQuantity()} items</a>)`;   
     
       
     });
